@@ -15,9 +15,9 @@ import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.Runtime;
-import software.amazon.awscdk.services.s3.assets.AssetOptions;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 
@@ -30,7 +30,7 @@ public class InfrastructureStack extends Stack {
         super(scope, id, props);
 
         Function rngService = new Function(this, "RngService", FunctionProps.builder()
-                .runtime(Runtime.JAVA_11)
+                .runtime(Runtime.JAVA_8_CORRETTO)
                 .code(Code.fromAsset("../software/rng-service/target/rng-service.jar"))
                 .handler("com.amazonaws.cloudcasino.RNGHandler")
                 .memorySize(1024)
@@ -46,6 +46,29 @@ public class InfrastructureStack extends Stack {
                 .methods(singletonList(HttpMethod.GET))
                 .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
                         .handler(rngService)
+                        .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
+                        .build()))
+                .build());
+
+        Map<String, String> rouletteEnvVars = new HashMap<>();
+        rouletteEnvVars.put("RNG_SERVICE_URL",httpApi.getApiEndpoint());
+        rouletteEnvVars.put("LOG_LEVEL", "INFO");
+        rouletteEnvVars.put("POWERTOOLS_SERVICE_NAME", "RouletteService");
+
+        Function rouletteService = new Function(this, "RouletteService", FunctionProps.builder()
+                .runtime(Runtime.JAVA_8_CORRETTO)
+                .code(Code.fromAsset("../software/roulette-service/target/roulette-service.jar"))
+                .handler("com.amazonaws.cloudcasino.RouletteHandler")
+                .memorySize(1024)
+                .timeout(Duration.seconds(10))
+                .environment(rouletteEnvVars)
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/roulette")
+                .methods(singletonList(HttpMethod.POST))
+                .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
+                        .handler(rouletteService)
                         .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
                         .build()))
                 .build());

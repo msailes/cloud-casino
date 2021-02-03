@@ -12,12 +12,14 @@
 
   <modules>
     <module>rng-service</module>
+    <module>roulette-service</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <powertools.version>1.2.0</powertools.version>
   </properties>
 
   <dependencyManagement>
@@ -32,6 +34,29 @@
         <artifactId>aws-lambda-java-events</artifactId>
         <version>3.7.0</version>
       </dependency>
+
+      <dependency>
+        <groupId>software.amazon.lambda</groupId>
+        <artifactId>powertools-tracing</artifactId>
+        <version>${powertools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.lambda</groupId>
+        <artifactId>powertools-logging</artifactId>
+        <version>${powertools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.lambda</groupId>
+        <artifactId>powertools-metrics</artifactId>
+        <version>${powertools.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>fluent-hc</artifactId>
+        <version>4.5.13</version>
+      </dependency>
+
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
