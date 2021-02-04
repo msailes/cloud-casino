@@ -15,6 +15,7 @@ import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.logs.RetentionDays;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class InfrastructureStack extends Stack {
                 .handler("com.amazonaws.cloudcasino.RNGHandler")
                 .memorySize(1024)
                 .timeout(Duration.seconds(10))
+                .logRetention(RetentionDays.ONE_WEEK)
                 .build());
 
         HttpApi httpApi = new HttpApi(this, "cloud-casino-api", HttpApiProps.builder()
@@ -62,6 +64,7 @@ public class InfrastructureStack extends Stack {
                 .memorySize(1024)
                 .timeout(Duration.seconds(10))
                 .environment(rouletteEnvVars)
+                .logRetention(RetentionDays.ONE_WEEK)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
