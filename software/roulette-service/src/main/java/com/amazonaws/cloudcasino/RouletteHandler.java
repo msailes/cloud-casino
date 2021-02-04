@@ -47,6 +47,7 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
         LoggingUtils.appendKey("betId", betId);
         recordBetRequest(rouletteRequest, betId);
 
+        RandomNumberResponse randomNumberResponse;
         try {
             String rngRequestUrl = RNG_SERVICE_URL + "/rng?lower=0&upper=36";
             log.info("RequestUrl: " + rngRequestUrl);
@@ -54,6 +55,7 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
                     .execute()
                     .returnContent()
                     .asString();
+            randomNumberResponse = objectMapper.readValue(response, RandomNumberResponse.class);
             log.info("RNG Response: " + response);
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -62,8 +64,16 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
                     .build();
         }
 
+        int returns = 0;
+
+        if (randomNumberResponse.getRandomNumber() == rouletteRequest.getBetNumber()) {
+            returns = rouletteRequest.getStakeAmount() * 36;
+        }
+
+        recordStakeAndReturns(rouletteRequest.getStakeAmount(), returns);
+
         try {
-            String body = objectMapper.writeValueAsString(new RouletteResponse(betId, 0));
+            String body = objectMapper.writeValueAsString(new RouletteResponse(betId, returns));
             return APIGatewayV2HTTPResponse.builder()
                     .withStatusCode(200)
                     .withBody(body)
@@ -74,6 +84,11 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
                     .withStatusCode(500)
                     .build();
         }
+    }
+
+    private void recordStakeAndReturns(int stake, int returns) {
+        metricsLogger.putMetric("Stake", stake);
+        metricsLogger.putMetric("Returns", returns);
     }
 
     private void recordBetRequest(RouletteRequest rouletteRequest, String betId) {
