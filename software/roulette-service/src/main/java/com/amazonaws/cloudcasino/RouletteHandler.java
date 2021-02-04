@@ -49,7 +49,7 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
 
         try {
             String rngRequestUrl = RNG_SERVICE_URL + "/rng?lower=0&upper=36";
-            log.info(rngRequestUrl);
+            log.info("RequestUrl: " + rngRequestUrl);
             String response = Request.Get(rngRequestUrl)
                     .execute()
                     .returnContent()

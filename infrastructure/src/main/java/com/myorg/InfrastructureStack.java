@@ -30,12 +30,17 @@ public class InfrastructureStack extends Stack {
     public InfrastructureStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
 
+        Map<String, String> rngEnvVars = new HashMap<>();
+        rngEnvVars.put("LOG_LEVEL", "INFO");
+        rngEnvVars.put("POWERTOOLS_SERVICE_NAME", "RngService");
+
         Function rngService = new Function(this, "RngService", FunctionProps.builder()
                 .runtime(Runtime.JAVA_8_CORRETTO)
                 .code(Code.fromAsset("../software/rng-service/target/rng-service.jar"))
                 .handler("com.amazonaws.cloudcasino.RNGHandler")
                 .memorySize(1024)
                 .timeout(Duration.seconds(10))
+                .environment(rngEnvVars)
                 .logRetention(RetentionDays.ONE_WEEK)
                 .build());
 
