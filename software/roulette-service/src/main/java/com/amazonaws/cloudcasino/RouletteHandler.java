@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    private static final String RNG_SERVICE_URL = System.getProperty("RNG_SERVICE_URL");
+    private static final String RNG_SERVICE_URL = System.getenv("RNG_SERVICE_URL");
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger log = LogManager.getLogger();
