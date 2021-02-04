@@ -48,7 +48,9 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
         recordBetRequest(rouletteRequest, betId);
 
         try {
-            String response = Request.Get(RNG_SERVICE_URL + "/rng?lower=0&upper=36")
+            String rngRequestUrl = RNG_SERVICE_URL + "/rng?lower=0&upper=36";
+            log.info(rngRequestUrl);
+            String response = Request.Get(rngRequestUrl)
                     .execute()
                     .returnContent()
                     .asString();
@@ -76,7 +78,7 @@ public class RouletteHandler implements RequestHandler<APIGatewayV2HTTPEvent, AP
 
     private void recordBetRequest(RouletteRequest rouletteRequest, String betId) {
         metricsLogger.putMetric("RouletteBet", 1, Unit.COUNT);
-        metricsLogger.putDimensions(DimensionSet.of("Games", "Roulette"));
+        metricsLogger.setDimensions(DimensionSet.of("Games", "Roulette"));
         metricsLogger.putProperty("PlayerId", rouletteRequest.getPlayerId());
         metricsLogger.putProperty("Stake", rouletteRequest.getStakeAmount());
         metricsLogger.putProperty("BetId", betId);
