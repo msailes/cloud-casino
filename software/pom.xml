@@ -13,6 +13,7 @@
   <modules>
     <module>rng-service</module>
     <module>roulette-service</module>
+    <module>cloud-casino-performance</module>
   </modules>
 
   <properties>
