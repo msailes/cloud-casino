@@ -16,10 +16,12 @@ import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.dynamodb.TableProps;
+import software.amazon.awscdk.services.lambda.Architecture;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.Tracing;
 import software.amazon.awscdk.services.logs.RetentionDays;
 
 import java.util.HashMap;
@@ -47,6 +49,8 @@ public class InfrastructureStack extends Stack {
                 .timeout(Duration.seconds(10))
                 .environment(rngEnvVars)
                 .logRetention(RetentionDays.ONE_WEEK)
+                .tracing(Tracing.ACTIVE)
+                .architecture(Architecture.ARM_64)
                 .build());
 
         HttpApi httpApi = new HttpApi(this, "cloud-casino-api", HttpApiProps.builder()
@@ -63,7 +67,7 @@ public class InfrastructureStack extends Stack {
                 .build());
 
         Map<String, String> rouletteEnvVars = new HashMap<>();
-        rouletteEnvVars.put("RNG_SERVICE_URL",httpApi.getApiEndpoint());
+        rouletteEnvVars.put("RNG_SERVICE_URL", httpApi.getApiEndpoint());
         rouletteEnvVars.put("LOG_LEVEL", "INFO");
         rouletteEnvVars.put("POWERTOOLS_SERVICE_NAME", "RouletteService");
 
@@ -75,6 +79,8 @@ public class InfrastructureStack extends Stack {
                 .timeout(Duration.seconds(10))
                 .environment(rouletteEnvVars)
                 .logRetention(RetentionDays.ONE_WEEK)
+                .tracing(Tracing.ACTIVE)
+                .architecture(Architecture.ARM_64)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()

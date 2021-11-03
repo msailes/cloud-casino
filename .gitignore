@@ -23,7 +23,5 @@
 hs_err_pid*
 /.idea/
 target
-/software/rng-service/rng-service.iml
-/software/cloud-casino-parent.iml
+*.iml
 /software/rng-service/dependency-reduced-pom.xml
-/software/cloud-casino-performance/cloud-casino-performance.iml

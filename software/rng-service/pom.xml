@@ -9,7 +9,7 @@
 
   <artifactId>rng-service</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>rng-service</name>
+  <name>Random Number Generator Service</name>
 
   <dependencies>
     <dependency>
